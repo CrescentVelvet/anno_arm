@@ -1,0 +1,100 @@
+<?xml version = "1.0"?>
+<robot name="car_model" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="arm_1_mass" value="3.0" />
+    <xacro:property name="arm_1_a" value="0.05" />
+    <xacro:property name="arm_1_b" value="0.05" />
+    <xacro:property name="arm_1_c" value="0.05" />
+    <xacro:property name="ns" value="123/" />
+
+    <link name="${ns}world" />
+
+    <joint name="${ns}world_joint" type="fixed">
+      <parent link="${ns}world" />
+      <child link = "${ns}base_link" />
+      <origin xyz="0 0 0.0315" rpy="0.0 0.0 0.0" />
+    </joint>
+    <link name="${ns}base_link">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="100" />
+            <inertia ixx="10" ixy="0.0" ixz="0.0" iyy="10" iyz="0.0" izz="10" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.05 0.05 0.05" />
+            </geometry>
+            <material name="Grey">
+                <color rgba="0.79216 0.81961 0.93333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.05 0.05 0.05" />
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- arm1 -->
+    <link name="${ns}arm_1">
+        <collision>
+            <origin
+                xyz="0 0 ${arm_1_c / 2}"
+                rpy="0 0 0" />
+            <geometry>
+                <box size="${arm_1_a} ${arm_1_b} ${arm_1_c}" />
+            </geometry>
+        </collision>
+        <visual>
+            <origin
+                xyz="0 0 ${arm_1_c / 2}"
+                rpy="0 0 0" />
+            <geometry>
+                <box size="${arm_1_a} ${arm_1_b} ${arm_1_c}" />
+            </geometry>
+            <material name="DeepPink" >
+                <color rgba="1 0.0784 0.5764 0.5" />
+            </material>
+        </visual>
+        <inertial>
+            <origin
+                xyz="0 0 ${arm_1_c / 2}"
+                rpy="0 0 0" />
+            <mass value="${arm_1_mass / 2}" />
+            <inertia
+                ixx="${arm_1_mass / 12.0 * (arm_1_b*arm_1_b + arm_1_c*arm_1_c)}"
+                ixy="0.0"
+                ixz="0.0"
+                iyy="${arm_1_mass / 12.0 * (arm_1_a*arm_1_a + arm_1_c*arm_1_c)}"
+                iyz="0.0"
+                izz="${arm_1_mass / 12.0 * (arm_1_a*arm_1_a + arm_1_b*arm_1_b)}" />
+        </inertial>
+    </link>
+    <joint name="${ns}joint_0_1" type="continuous">
+        <axis xyz="0 0 1" rpy="0 0 0" />
+        <parent link="${ns}base_link" />
+        <child link="${ns}arm_1" />
+        <origin xyz="5 0 0" rpy="0 0 0" />
+        <limit effort="100" velocity="100" />
+        <joint_properties damping="0" friction="0" />
+    </joint>
+
+    <!-- gazebo reference -->
+    <gazebo reference="${ns}arm_1">
+        <mu1>0.2</mu1>
+        <mu2>0.2</mu2>
+        <material>Gazebo/Green</material>
+    </gazebo>
+
+    <!-- <gazebo>
+        <plugin name="gazebo_ros_control" 
+            filename="libgazebo_ros_control.so">
+            <robotNamespace>/arm_model</robotNamespace>
+            <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+            <legacyModeNS>true</legacyModeNS>
+        </plugin>
+    </gazebo> -->
+
+</robot>

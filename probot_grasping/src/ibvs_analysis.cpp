@@ -19,7 +19,7 @@ using namespace cv;
 
 #define NUM 4
 vpColVector v;
-vpFeaturePoint ppp[NUM];
+vpFeaturePoint ppp[NUM], pp[NUM];
 // bool iscircle(double rough_radius, Mat image, Point center)
 // {
 //     //多扇区圆检测
@@ -184,89 +184,196 @@ void myCallback(const std_msgs::Float64MultiArray &msg)
     // cout << "--------------------------------" << filtered_corners.size() << endl;
     // imshow("final", image_color);
 
-    // for (int i = 0; i < 2 * NUM; i += 2)
-    // {
-    //     ppp[i/2].set_x(msg.data[i]);
-    //     ppp[i/2].set_y(msg.data[i + 1]);
-    //     ppp[i/2].set_Z(0);
-    //     // std::cout << "123" << std::endl;
-    // }
+    for (int i = 0; i < 2 * NUM; i += 2)
+    {
+        // std::cout<<"123"<<endl;
+        ppp[i / 2].set_x(msg.data[i]);
+        // std::cout<<"456"<<endl;
+        ppp[i / 2].set_y(msg.data[i + 1]);
+        // std::cout<<"789"<<endl;
+        ppp[i / 2].set_Z(0);
+        std::cout << "x:" << ppp[i / 2].get_x() << "|||"
+                  << "y:" << ppp[i / 2].get_y() << std::endl;
+        pp[i / 2].set_x(msg.data[i] / 5000);
+        // std::cout<<"456"<<endl;
+        pp[i / 2].set_y(msg.data[i + 1] / 5000);
+        // std::cout<<"789"<<endl;
+        pp[i / 2].set_Z(0.75);
+    }
     // cv::waitKey(8);
 }
 
-void display_trajectory(const vpImage<unsigned char> &I, std::vector<vpPoint> &point, const vpHomogeneousMatrix &cMo,
-                        const vpCameraParameters &cam)
+// void display_trajectory(const vpImage<unsigned char> &I, std::vector<vpPoint> &point, const vpHomogeneousMatrix &cMo,
+//                         const vpCameraParameters &cam)
+// {
+//     vpImagePoint cog;
+//     for (unsigned int i = 0; i < NUM; i++)
+//     {
+//         point[i].project(cMo);
+//         vpMeterPixelConversion::convertPoint(cam, point[i].get_x(), point[i].get_y(), cog);
+//     }
+// }
+void display_trajectory(const vpImage<unsigned char> &I, std::vector<vpPoint> &point,
+                        const vpHomogeneousMatrix &cMo, const vpCameraParameters &cam)
 {
+    int thickness = 1;
+    static std::vector<vpImagePoint> traj[4];
     vpImagePoint cog;
-    for (unsigned int i = 0; i < NUM; i++)
+    for (unsigned int i = 0; i < 4; i++)
     {
-        point[i].project(cMo);
+        // Project the point at the given camera position
+        // cout << "aaaaaaaaaaaaaaa" << point[i].get_Z() << endl;
+        // point[i].project(cMo);
+        // cout << "ccccccccccccccc" << point[i].get_Z() << endl;
         vpMeterPixelConversion::convertPoint(cam, point[i].get_x(), point[i].get_y(), cog);
+        traj[i].push_back(cog);
+    }
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        for (unsigned int j = 1; j < traj[i].size(); j++)
+        {
+            vpDisplay::displayLine(I, traj[i][j - 1], traj[i][j], vpColor::green, thickness);
+        }
     }
 }
-
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "ibvs_analysis");
     ros::NodeHandle n;
-    // ros::Subscriber my_subscriber = n.subscribe("/display_img", 10, myCallback);
+    ros::Subscriber my_subscriber = n.subscribe("/display_img", 10, myCallback);
     ros::Publisher my_publisher = n.advertise<std_msgs::Float64MultiArray>("/cmd_vel", 100);
     std_msgs::Float64MultiArray msg;
     for (int i = 0; i < 6; i++)
     {
         msg.data.push_back(0);
     }
-    vpHomogeneousMatrix cdMo(0, 0, 0.75, 0, 0, 0);
-    vpHomogeneousMatrix cMo(0.15, -0.1, 1., vpMath::rad(10), vpMath::rad(-10), vpMath::rad(50));
-    std::vector<vpPoint> point;
-    point.push_back(vpPoint(0.1, -0.1, 0));
-    point.push_back(vpPoint(0.1, 0.1, 0));
-    point.push_back(vpPoint(-0.1, 0.1, 0));
-    point.push_back(vpPoint(-0.1, -0.1, 0));
-    vpServo task;
-    task.setServo(vpServo::EYEINHAND_CAMERA);
-    task.setInteractionMatrixType(vpServo::CURRENT);
-    task.setLambda(0.5);
-    vpFeaturePoint pd[NUM];
-    for (unsigned int i = 0; i < NUM; i++)
-    {
-        point[i].track(cdMo);
-        vpFeatureBuilder::create(pd[i], point[i]);
-        point[i].track(cMo);
-        vpFeatureBuilder::create(ppp[i], point[i]);
-        task.addFeature(ppp[i], pd[i]);
-    }
-    vpHomogeneousMatrix wMc, wMo;
-    vpSimulatorCamera robot;
-    robot.getPosition(wMc);
-    wMo = wMc * cMo;
-    vpImage<unsigned char> Iint(480, 640, 255);
-    vpImage<unsigned char> Iext(480, 640, 255);
-    vpDisplayX displayInt(Iint, 0, 0, "Internal view");
-    vpCameraParameters cam(800, 800, 400, 400);
-    while (ros::ok())
-    {
-        ros::spinOnce();
+    // vpHomogeneousMatrix cdMo(0, 0, 0.75, 0, 0, 0);
+    // vpHomogeneousMatrix cMo(0.15, -0.1, 1., vpMath::rad(10), vpMath::rad(-10), vpMath::rad(50));
+    // std::vector<vpPoint> point;
+    // point.push_back(vpPoint(0.1, -0.1, 0));
+    // point.push_back(vpPoint(0.1, 0.1, 0));
+    // point.push_back(vpPoint(-0.1, 0.1, 0));
+    // point.push_back(vpPoint(-0.1, -0.1, 0));
+    // vpServo task;
+    // task.setServo(vpServo::EYEINHAND_CAMERA);
+    // task.setInteractionMatrixType(vpServo::CURRENT);
+    // task.setLambda(0.5);
+    // vpFeaturePoint pd[NUM];
+    // for (unsigned int i = 0; i < NUM; i++)
+    // {
+    //     point[i].track(cdMo);
+    //     vpFeatureBuilder::create(pd[i], point[i]);
+    //     point[i].track(cMo);
+    //     // vpFeatureBuilder::create(ppp[i], point[i]);
+    //     task.addFeature(ppp[i], pd[i]);
+    // }
 
-        robot.getPosition(wMc);
-        cMo = wMc.inverse() * wMo;
-        for (unsigned int i = 0; i < NUM; i++)
+    // vpHomogeneousMatrix wMc, wMo;
+    // vpSimulatorCamera robot;
+    // robot.getPosition(wMc);
+    // wMo = wMc * cMo;
+    // vpImage<unsigned char> Iint(480, 640, 255);
+    // vpImage<unsigned char> Iext(480, 640, 255);
+    // vpDisplayX displayInt(Iint, 0, 0, "Internal view");
+    // vpCameraParameters cam(800, 800, 400, 400);
+    try
+    {
+        vpHomogeneousMatrix cdMo(0, 0, 0.75, 0, 0, 0);
+        vpHomogeneousMatrix cMo(0.15, -0.1, 1., vpMath::rad(10), vpMath::rad(-10), vpMath::rad(50));
+        std::vector<vpPoint> point;
+        point.push_back(vpPoint(-0.1, -0.1, 0));
+        point.push_back(vpPoint(0.1, -0.1, 0));
+        point.push_back(vpPoint(0.1, 0.1, 0));
+        point.push_back(vpPoint(-0.1, 0.1, 0));
+        // point.push_back(vpPoint(400, 400, 0));
+        // point.push_back(vpPoint(400, 500, 0));
+        // point.push_back(vpPoint(500, 400, 0));
+        // point.push_back(vpPoint(500, 500, 0));
+        vpServo task;
+        task.setServo(vpServo::EYEINHAND_CAMERA);
+        task.setInteractionMatrixType(vpServo::CURRENT);
+        task.setLambda(0.5);
+        vpFeaturePoint p[4], pd[4];
+        for (unsigned int i = 0; i < 4; i++)
         {
+            point[i].track(cdMo);
+            cout << "aaaaaaaaaaaaaaa" << point[i].get_x() << endl;
+            vpFeatureBuilder::create(pd[i], point[i]);
+            cout << "bbbbbbbbbbbbbbb" << pd[i].get_x() << endl;
             point[i].track(cMo);
-            vpFeatureBuilder::create(ppp[i], point[i]);
+            cout << "ccccccccccccccc" << point[i].get_x() << endl;
+            vpFeatureBuilder::create(p[i], point[i]);
+            cout << "ddddddddddddddd" << p[i].get_x() << endl;
+            task.addFeature(p[i], pd[i]);
         }
-        v = task.computeControlLaw();
-        robot.setVelocity(vpRobot::CAMERA_FRAME, v);
-        for (int i = 0; i < 6; i++)
+
+        vpHomogeneousMatrix wMc, wMo;
+        vpSimulatorCamera robot;
+        robot.setSamplingTime(0.040);
+        robot.getPosition(wMc);
+        wMo = wMc * cMo;
+        vpImage<unsigned char> Iint(480, 640, 255);
+        vpImage<unsigned char> Iext(480, 640, 255);
+#if defined(VISP_HAVE_X11)
+        vpDisplayX displayInt(Iint, 0, 0, "Internal view");
+        vpDisplayX displayExt(Iext, 670, 0, "External view");
+#elif defined(VISP_HAVE_GDI)
+        vpDisplayGDI displayInt(Iint, 0, 0, "Internal view");
+        vpDisplayGDI displayExt(Iext, 670, 0, "External view");
+#elif defined(VISP_HAVE_OPENCV)
+        vpDisplayOpenCV displayInt(Iint, 0, 0, "Internal view");
+        vpDisplayOpenCV displayExt(Iext, 670, 0, "External view");
+#else
+        std::cout << "No image viewer is available..." << std::endl;
+#endif
+#if defined(VISP_HAVE_DISPLAY)
+        vpProjectionDisplay externalview;
+        for (unsigned int i = 0; i < 4; i++)
+            externalview.insert(point[i]);
+#endif
+        vpCameraParameters cam(840, 840, Iint.getWidth() / 2, Iint.getHeight() / 2);
+        vpHomogeneousMatrix cextMo(0, 0, 3, 0, 0, 0);
+        while (ros::ok())
         {
-            msg.data.at(i) = v.data[i];
-            // msg.data.at(i) = 0;
+            ros::spinOnce();
+
+            //   cout<<"aaaaaaaaaaaaaaa"<<pd[0].get_Z()<<endl;
+
+            robot.getPosition(wMc);
+            cMo = wMc.inverse() * wMo;
+            for (unsigned int i = 0; i < 4; i++)
+            {
+                point[i].track(cMo);
+                vpFeatureBuilder::create(p[i], point[i]);
+                // cout << "ccccccccccccccc" << point[i].get_x() << endl;
+                // cout << "ddddddddddddddd" << p[i].get_x() << endl;
+            }
+            vpColVector v = task.computeControlLaw();
+            for (int i = 0; i < 6; i++)
+            {
+                msg.data.at(i) = v.data[i];
+                //   msg.data.at(i) = 0;
+            }
+            my_publisher.publish(msg);
+            robot.setVelocity(vpRobot::CAMERA_FRAME, v);
+            vpDisplay::display(Iint);
+            vpDisplay::display(Iext);
+            display_trajectory(Iint, point, cMo, cam);
+            vpServoDisplay::display(task, cam, Iint, vpColor::green, vpColor::red);
+#if defined(VISP_HAVE_DISPLAY)
+            externalview.display(Iext, cextMo, cMo, cam, vpColor::red, true);
+#endif
+            vpDisplay::flush(Iint);
+            vpDisplay::flush(Iext);
+            // A click to exit
+            if (vpDisplay::getClick(Iint, false) || vpDisplay::getClick(Iext, false))
+                break;
+            vpTime::wait(robot.getSamplingTime() * 1000);
         }
-        my_publisher.publish(msg);
-        vpDisplay::display(Iint);
-        display_trajectory(Iint, point, cMo, cam);
-        if (vpDisplay::getClick(Iint, false) || vpDisplay::getClick(Iext, false))
-            break;
+        task.kill();
     }
-    task.kill();
+    catch (const vpException &e)
+    {
+        std::cout << "Catch an exception: " << e << std::endl;
+    }
 }

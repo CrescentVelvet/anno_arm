@@ -6,12 +6,6 @@
   <xacro:include filename="$(find probot_description)/urdf/PROBOT_Anno/gripper.xacro" />
 
   <link name="world" />
-
-  <joint name="world_joint" type="fixed">
-    <parent link="world" />
-    <child link = "base_link" />
-    <origin xyz="0 0 0.0315" rpy="0.0 0.0 0.0" />
-  </joint>
   <link name="base_link">
     <inertial>
       <origin xyz="-0.010934 0.23134 0.0051509" rpy="0 0 0" />
@@ -34,6 +28,11 @@
       </geometry>
     </collision>
   </link>
+  <joint name="world_joint" type="fixed">
+    <parent link="world" />
+    <child link = "base_link" />
+    <origin xyz="0 0 0.0315" rpy="0.0 0.0 0.0" />
+  </joint>
 
   <link name="link_1">
     <inertial>
@@ -207,7 +206,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="joint_6" type="revolute">
+  <joint name="joint_6" type="continuous">
     <origin xyz="0 -0.042 0" rpy="0 0 0" />
     <parent link="link_5" />
     <child link="link_6" />
@@ -217,13 +216,13 @@
 
   <link name="tool0"/>
   <joint name="joint_tool0" type="fixed">
-    <origin xyz="0 -0.013 0" rpy="${M_PI/2} 0 0" />
+    <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
     <parent link="link_6" />
     <child link="tool0" />
   </joint>
 
    <!-- Attach the right gripper -->
-   <gripper parent="tool0" color="Green" xyz="0 0.015 0.02" rpy="0 ${-M_PI/2} ${-M_PI/2}"/>
+   <!-- <gripper parent="tool0" color="Green" xyz="0 0.007 0.02" rpy="0 ${-M_PI/2} ${-M_PI/2}"/> -->
 
   <!-- Transmissions for ROS Control -->
   <xacro:macro name="transmission_block" params="joint_name">
@@ -246,7 +245,7 @@
   <xacro:transmission_block joint_name="joint_5"/>
   <xacro:transmission_block joint_name="joint_6"/>
 
-  <xacro:transmission_block joint_name="gripper_finger_joint"/>
+  <!-- <xacro:transmission_block joint_name="gripper_finger_joint"/> -->
 
   <xacro:include filename="$(find probot_description)/urdf/PROBOT_Anno/sensors/camera.urdf.xacro"/>
 

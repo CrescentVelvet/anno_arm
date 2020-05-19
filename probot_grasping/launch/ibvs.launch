@@ -2,7 +2,8 @@
 <launch>
 
     <node pkg="probot_grasping" name="display_img" type="display_img" output="screen"/>
-    <node pkg="probot_grasping" name="vel_control" type="vel_control" output="screen"/>
-    <node pkg="probot_grasping" name="ibvs_analysis" type="ibvs_analysis" output="screen"/>
+    <node pkg="probot_grasping" name="vel_control" type="vel_control" output="log"/>
+    <!-- <node pkg="probot_grasping" name="testvel" type="testvel" output="screen"/> -->
+    <!-- <node pkg="probot_grasping" name="ibvs_analysis" type="ibvs_analysis" output="screen"/> -->
 
 </launch>

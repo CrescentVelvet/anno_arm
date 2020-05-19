@@ -1,28 +1,61 @@
-<?xml version='1.0' ?>
-<sdf version='1.4'>
-  <world name='empty'>
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="empty">
     <!-- A global light source -->
     <include>
       <uri>model://sun</uri>
     </include>
- 
+    <!-- <light name="user_directional_light_0" type="directional">
+      <pose frame="">1.21273 -1.96338 1 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0.1 0.1 -0.9</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>1</cast_shadows>
+    </light>
+    <light name="user_directional_light_1" type="directional">
+      <pose frame="">1.24601 0.0317 1 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0.1 0.1 -0.9</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>1</cast_shadows>
+    </light>
+    <state world_name="empty">
+      <light name="user_directional_light_0">
+        <pose frame="">0 -1 1 1 -0 0</pose>
+      </light>
+      <light name="user_directional_light_1">
+        <pose frame="">0 1 1 -1 0 0</pose>
+      </light>
+    </state> -->
+
     <!-- A ground plane -->
     <include>
       <uri>model://ground_plane</uri>
     </include>
- 
+
     <!-- Physics settings for simulation -->
-    <physics type='ode'>
+    <physics type="ode">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
       <gravity>0 0 -9.81</gravity>
     </physics>
- 
- 
-<model name='coke_can_box_model'>
-      <pose frame=''>0.30 0.0 0.2165 0 0 0</pose>
-      <link name='coke_can'>
+
+    <model name="coke_can_box_model">
+      <pose frame="">0.30 0.0 0.2165 0 0 0</pose>
+      <link name="coke_can">
         <inertial>
           <mass>0.001</mass>
           <inertia>
@@ -34,53 +67,52 @@
             <izz>0.00006</izz>
           </inertia>
         </inertial>
-        <collision name='collision'>
- 
-            <geometry>
-                <!--cylinder>
+        <collision name="collision">
+          <geometry>
+            <!--cylinder>
                     <radius>0.0075</radius>
                     <length>.05</length>
                 </cylinder-->
-                <box>
-                    <size>0.015 0.015 0.05</size>
-                </box>
-                <!-- <mesh>
+            <box>
+              <size>0.015 0.015 0.05</size>
+            </box>
+            <!-- <mesh>
                     <uri>model://coke_can/meshes/coke_can.dae</uri>
                     <scale>0.2 0.15 0.18</scale>
                 </mesh> -->
-            </geometry>
+          </geometry>
           <max_contacts>10</max_contacts>
           <surface>
-                   <friction>
-                     <ode>
-                       <mu>100.0</mu>
-                       <mu2>100.0</mu2>
-                     </ode>
-                   </friction>
-                   <contact>
-                     <ode>
-                       <kp>10000000.0</kp>
-                       <kd>1.0</kd>
-                       <min_depth>0.001</min_depth>
-                       <max_vel>0.1</max_vel>
-                     </ode>
-                   </contact>
-           </surface>
+            <friction>
+              <ode>
+                <mu>100.0</mu>
+                <mu2>100.0</mu2>
+              </ode>
+            </friction>
+            <contact>
+              <ode>
+                <kp>10000000.0</kp>
+                <kd>1.0</kd>
+                <min_depth>0.001</min_depth>
+                <max_vel>0.1</max_vel>
+              </ode>
+            </contact>
+          </surface>
         </collision>
-        <visual name='visual'>
-            <geometry>
-                <!--cylinder>
+        <visual name="visual">
+          <geometry>
+            <!--cylinder>
                     <radius>0.0075</radius>
                     <length>.05</length>
                 </cylinder-->
-                <box>
-                    <size>0.015 0.015 0.05</size>
-                </box>
-                <!-- <mesh>
+            <box>
+              <size>0.015 0.015 0.05</size>
+            </box>
+            <!-- <mesh>
                     <uri>model://coke_can/meshes/coke_can.dae</uri>
                     <scale>0.2 0.15 0.18</scale>
                 </mesh> -->
-            </geometry>
+          </geometry>
           <material>
             <script>
               <name>Gazebo/Green</name>
@@ -92,11 +124,11 @@
         <kinematic>0</kinematic>
       </link>
     </model>
- 
-   <model name='table_box_model'>
+
+    <model name="table_box_model">
       <static>true</static>
-      <pose frame=''>0.40 0.0 0.1 0 -0 1.5707963265</pose>
-      <link name='table_box_link'>
+      <pose frame="">0.40 0.0 0.1 0 -0 1.5707963265</pose>
+      <link name="table_box_link">
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -108,7 +140,7 @@
             <izz>0.166667</izz>
           </inertia>
         </inertial>
-        <collision name='collision'>
+        <collision name="collision">
           <geometry>
             <box>
               <size>0.30 0.30 0.2</size>
@@ -117,21 +149,21 @@
           <max_contacts>10</max_contacts>
           <surface>
             <contact>
-              <ode/>
+              <ode />
             </contact>
-            <bounce/>
+            <bounce />
             <friction>
               <ode>
                 <mu>0.6</mu>
                 <mu2>0.6</mu2>
               </ode>
               <torsional>
-                <ode/>
+                <ode />
               </torsional>
             </friction>
           </surface>
         </collision>
-        <visual name='visual'>
+        <visual name="visual">
           <geometry>
             <box>
               <size>0.30 0.30 0.2</size>
@@ -148,7 +180,6 @@
         <kinematic>0</kinematic>
       </link>
     </model>
- 
+
   </world>
 </sdf>
-

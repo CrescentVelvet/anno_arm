@@ -1,5 +1,5 @@
 # anno_arm
-##配置环境 
+## 配置环境 
 ```sh
     $ ROS_VERSION=`/usr/bin/rosversion -d`   
     $ sudo apt-get install ros-melodic-moveit-*   
@@ -20,6 +20,6 @@ $ source ~/.bashrc
 ```
 
 
-##安装OpenCV 
+## 安装OpenCV 
 
 

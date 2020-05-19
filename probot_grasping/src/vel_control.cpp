@@ -10,6 +10,10 @@
 #include "controller_manager_msgs/SwitchController.h"
 #include "controller_manager_msgs/ListControllers.h"
 #include "jacobi.hpp"
+#include <moveit/move_group_interface/move_group_interface.h>
+#include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit_msgs/DisplayRobotState.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
 
 ros::Time t;
 double begin;
@@ -23,9 +27,9 @@ public:
         {
             init_pos.data.push_back(0);
         }
-        pub_ = n_.advertise<std_msgs::Float64MultiArray>("/probot_anno/arm_vel_controller/command", 100);
-        sub_status = n_.subscribe("/gazebo/link_states", 100, &SubscribeAndPublish::poseCallBack, this);
-        sub_cmdvel = n_.subscribe("/cmd_vel", 100, &SubscribeAndPublish::cmdvelCallback, this);
+        pub_ = n_.advertise<std_msgs::Float64MultiArray>("/probot_anno/arm_vel_controller/command", 1);
+        sub_status = n_.subscribe("/gazebo/link_states", 1, &SubscribeAndPublish::poseCallBack, this);
+        sub_cmdvel = n_.subscribe("/cmd_vel", 1, &SubscribeAndPublish::cmdvelCallback, this);
     }
 
     void cmdvelCallback(const std_msgs::Float64MultiArray &msg)
@@ -42,21 +46,36 @@ public:
         ros::Time now = ros::Time::now();
         double duration = (now.toSec() - t.toSec()) - begin;
         Eigen::Matrix<double, 6, 1> vel;
-        // if (duration <= 5)
+        // if (duration <= 80)
         // {
             // vel << vx, vy, vz, wx, wy, wz;
             vel << this->cmdvx, this->cmdvy, this->cmdvz, this->cmdwx, this->cmdwy, this->cmdwz;
-            // vel << 0.005, 0.0, 0.0, 0.0, 0.0, 0.0;
+            // z方向反向
+            // vel << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
             // std::cout << ros::Time().now() << std::endl;
         // }
 
         // else
             // vel << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-        thetaVel = jacobi.inverse() * vel;
+        // thetaVel = jacobi.inverse() * vel;
+        thetaVel = jacobian.inverse() * vel;
     }
 
     void poseCallBack(const gazebo_msgs::LinkStatesConstPtr &msg)
     {
+        robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
+        robot_model::RobotModelPtr kinematic_model = robot_model_loader.getModel();
+        const robot_state::JointModelGroup *joint_model_group = kinematic_model->getJointModelGroup("manipulator");
+        robot_state::RobotStatePtr kinematic_state(new robot_state::RobotState(kinematic_model));
+        kinematic_state->setToDefaultValues();
+
+        Eigen::Vector3d reference_point_position(0.0, 0.0, 0.0315);
+
+        kinematic_state->getJacobian(joint_model_group,
+                                     kinematic_state->getLinkModel(joint_model_group->getLinkModelNames().back()),
+                                     reference_point_position, jacobian);
+        // ROS_INFO_STREAM("Jacobian: \n"
+                        // << jacobian << "\n");
         for (int i = 2; i < 8; i++)
         {
             pos[i - 2].x = msg->pose[i].position.x;
@@ -69,6 +88,8 @@ public:
         double alpha = atan((pos[5].z - pos[4].z) / (pos[5].x - pos[4].x));
         Z_6 << cos(alpha), 0, sin(alpha);
         jacobi = calJacobi(pos, Z_4, Z_6);
+        // ROS_INFO_STREAM("Jacobian: \n"
+        // << jacobi << "\n");
         calLinkVel();
         for (int i = 0; i < 6; i++)
         {
@@ -83,6 +104,7 @@ private:
     ros::Subscriber sub_status;
     ros::Subscriber sub_cmdvel;
     Eigen::Matrix<double, 6, 6> jacobi;
+    Eigen::MatrixXd jacobian;
     Eigen::Matrix<double, 6, 1> thetaVel;
     geometry_msgs::Point pos[6];
     double currentVel = 0;
