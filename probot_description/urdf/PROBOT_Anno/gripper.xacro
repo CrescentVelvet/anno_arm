@@ -15,7 +15,7 @@
 
     <!-- finger 1 -->
     <joint name="gripper_finger_joint" type="revolute">
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="-0.1 0 0.05" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
       <limit effort="1.0" velocity="3.14" lower="-0.8" upper="0.5" />
       <parent link="gripper_base_link"/>
@@ -53,7 +53,7 @@
 
     <!-- finger 2 -->
     <bioloid_F3_fixed parent="gripper_base" name="gripper_static_finger_bracket" color="${color}">
-      <origin xyz="0 0 ${-AX12_HEIGHT-F10_HEIGHT}" rpy="0 ${PI} 0" />
+      <origin xyz="-0.1 0 ${-AX12_HEIGHT-F10_HEIGHT-0.05}" rpy="0 ${PI} 0" />
     </bioloid_F3_fixed>
     
     <finger parent="gripper_static_finger_bracket" name="gripper_static_finger" color="${color}">

@@ -5,40 +5,6 @@
     <include>
       <uri>model://sun</uri>
     </include>
-    <!-- <light name="user_directional_light_0" type="directional">
-      <pose frame="">1.21273 -1.96338 1 0 -0 0</pose>
-      <diffuse>0.5 0.5 0.5 1</diffuse>
-      <specular>0.1 0.1 0.1 1</specular>
-      <direction>0.1 0.1 -0.9</direction>
-      <attenuation>
-        <range>20</range>
-        <constant>0.5</constant>
-        <linear>0.01</linear>
-        <quadratic>0.001</quadratic>
-      </attenuation>
-      <cast_shadows>1</cast_shadows>
-    </light>
-    <light name="user_directional_light_1" type="directional">
-      <pose frame="">1.24601 0.0317 1 0 -0 0</pose>
-      <diffuse>0.5 0.5 0.5 1</diffuse>
-      <specular>0.1 0.1 0.1 1</specular>
-      <direction>0.1 0.1 -0.9</direction>
-      <attenuation>
-        <range>20</range>
-        <constant>0.5</constant>
-        <linear>0.01</linear>
-        <quadratic>0.001</quadratic>
-      </attenuation>
-      <cast_shadows>1</cast_shadows>
-    </light>
-    <state world_name="empty">
-      <light name="user_directional_light_0">
-        <pose frame="">0 -1 1 1 -0 0</pose>
-      </light>
-      <light name="user_directional_light_1">
-        <pose frame="">0 1 1 -1 0 0</pose>
-      </light>
-    </state> -->
 
     <!-- A ground plane -->
     <include>
@@ -54,7 +20,7 @@
     </physics>
 
     <model name="coke_can_box_model">
-      <pose frame="">0.30 0.0 0.2165 0 0 0</pose>
+      <pose frame="">1 1 1 0 0 0</pose>
       <link name="coke_can">
         <inertial>
           <mass>0.001</mass>
@@ -180,6 +146,16 @@
         <kinematic>0</kinematic>
       </link>
     </model>
+
+    <!-- Disable shadows. -->
+    <scene>
+      <shadows>false</shadows>
+    </scene>
+
+    <include>
+      <uri>model://conveyor</uri>
+      <pose>1.2 5 0 0 0 -1.571</pose> <!-- Warning: Do not change this pose -->
+    </include>
 
   </world>
 </sdf>

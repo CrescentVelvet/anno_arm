@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include "std_msgs/Float64MultiArray.h"
+#include <controller_manager/controller_manager.h>
 
 #define P 0.0001
 #define I 1.0
@@ -39,7 +40,7 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     imgimg = cv_bridge::toCvShare(img, "bgr8")->image;
     green_img = cv::Mat::zeros(imgimg.size(), imgimg.type());
     cv::cvtColor(imgimg, hsv_img, CV_BGR2HSV);
-    cv::inRange(hsv_img, cv::Scalar(35, 43, 46), cv::Scalar(77, 255, 255), mask_img);
+    cv::inRange(hsv_img, cv::Scalar(35, 250, 160), cv::Scalar(77, 255, 255), mask_img);
     for (int r = 0; r < imgimg.rows; r++)
     {
         for (int c = 0; c < imgimg.cols; c++)
@@ -88,7 +89,7 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     for (int i = 0; i < contours.size(); i++)
     {
         cv::approxPolyDP(cv::Mat(contours[i]), approx, cv::arcLength(cv::Mat(contours[i]), true) * 0.02, true);
-        if (approx.size() == 4 && fabs(cv::contourArea(cv::Mat(approx))) > 1000 && cv::isContourConvex(cv::Mat(approx)))
+        if (approx.size() == 4 && fabs(cv::contourArea(cv::Mat(approx))) > 400 && cv::isContourConvex(cv::Mat(approx)))
         {
             double maxCosine = 0;
             for (int j = 2; j < 5; j++)
@@ -218,41 +219,20 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     }
 
     angle = min_angle_std - min_angle_p;
-    // if (angle > M_PI)
-    // {
-    //     angle -= 2 * M_PI;
-    // }
-    // else if (angle < -M_PI)
-    // {
-    //     angle += 2 * M_PI;
-    // }
-    // if (angle > M_PI / 2)
-    // {
-    //     angle -= M_PI / 2;
-    // }
-    // else if (angle < -M_PI / 2)
-    // {
-    //     angle += M_PI / 2;
-    // }
-    // std::cout << min_angle_p << std::endl;
-    // std::cout << min_angle_std << std::endl;
-    // std::cout << angle << std::endl;
-    /// PID controller
-    // X****************************
     double error_x = p_mean.y - std_mean.y;
     // std::cout << error_x << std::endl;
     // static double integra_x += error_x;
     static double last_error_x;
     double diff_x = error_x - last_error_x;
     last_error_x = error_x;
-    double v_x = P * error_x + D * diff_x;
+    double v_x = P * error_x * 3 + D * diff_x * 3;
     // Y****************************
     double error_y = p_mean.x - std_mean.x;
     // static double integra_y += error_y;
     static double last_error_y;
     double diff_y = error_y - last_error_y;
     last_error_y = error_y;
-    double v_y = P * error_y + D * diff_y;
+    double v_y = P * error_y * 4 + D * diff_y * 3;
     // Z****************************
     double error_z = std::max(sqrt(pow((p_squares[0].x - p_squares[1].x), 2) + pow((p_squares[0].y - p_squares[1].y), 2)),
                               sqrt(pow((p_squares[0].x - p_squares[3].x), 2) + pow((p_squares[0].y - p_squares[3].y), 2))) -
@@ -261,7 +241,7 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     static double last_error_z;
     double diff_z = error_z - last_error_z;
     last_error_z = error_z;
-    double v_z = P * error_z + D * diff_z;
+    double v_z = P * error_z * 1 + D * diff_z * 1;
     // wZ***************************
     static double last_error_wz;
     double diff_wz = angle - last_error_wz;
@@ -272,8 +252,16 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     std::cout << v_wz << std::endl;
     cmd_vel.data[0] = v_x;
     cmd_vel.data[1] = v_y;
-    cmd_vel.data[2] = v_z;
     cmd_vel.data[5] = v_wz;
+    if (fuck_count == 0)
+    {
+        cmd_vel.data[2] = v_z;
+    }
+    else
+    {
+        cmd_vel.data[2] = -v_z;
+    }
+
     if (p_mean.x < 1e-3 && p_mean.y < 1e-3)
     {
         cmd_vel.data[0] = 0;
@@ -282,59 +270,12 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
         cmd_vel.data[5] = 0;
     }
     my_publisher.publish(cmd_vel);
-    // std::vector<cv::DMatch> matches;
-    // std::vector<std::vector<cv::DMatch>> knnMatches;
-    // cv::BFMatcher bfMatcher(cv::NORM_HAMMING);
-    // const float minRatio = 1.f / 1.5f;
-    // if (squares.size() != 0)
-    // {
-    //     bfMatcher.match(p_squares, std_squares, matches);
-    //     bfMatcher.knnMatch(p_squares, std_squares, knnMatches, 2);
-    //     for (int i = 0; i < knnMatches.size(); i++)
-    //     {
-    //         const cv::DMatch &bestMatch = knnMatches[i][0];
-    //         const cv::DMatch &betterMatch = knnMatches[i][1];
-    //         float distanceRatio = bestMatch.distance / betterMatch.distance;
-    //         if (distanceRatio < minRatio)
-    //             matches.push_back(bestMatch);
-    //     }
-    // }
-    // else
-    // {
-    // }
-    // std::vector<cv::KeyPoint> keypoints_1;
-    // cv::Mat descriptor_1;
-    // cv::Mat sift_img;
-    // cv::Ptr<cv::Feature2D> sift = cv::xfeatures2d::SIFT::create(0, 3, 0.04, 10);
-    // if (squares.size() != 0)
-    // {
-    //     sift->detectAndCompute(green_img, cv::noArray(), keypoints_1, descriptor_1);
-    //     drawKeypoints(green_img, keypoints_1, sift_img, cv::Scalar::all(-1), cv::DrawMatchesFlags::DEFAULT);
-    // }
-    // else
-    // {
-    //     sift_img = green_img;
-    // }
-    // try
-    // {
-    // }
-    // catch (...)
-    // {
-    //     std::cout << "555" << /*e.msg <<*/ std::endl;
-    // }
-    // for (int i = 0; i < msg_img.size(); i++)
-    // {
-    //     msg.data.push_back(msg_img[i].x);
-    //     msg.data.push_back(msg_img[i].y);
-    // }
-    // my_publisher.publish(msg);
-
     cv::line(imgimg, p_mean, std_mean, cv::Scalar(255, 0, 255), 5, cv::LINE_AA);
     cv::imshow("imgimg", imgimg);
     // cv::imshow("mask_img", mask_img);
-    cv::imshow("green_img", green_img);
+    // cv::imshow("green_img", green_img);
     // cv::imshow("scharr_img", scharr_img);
-    cv::imshow("jiao_img", jiao_img);
+    // cv::imshow("jiao_img", jiao_img);
     // cv::imshow("jiao_img0", jiao_img0);
     cv::waitKey(4);
 }
@@ -347,16 +288,33 @@ int main(int argc, char *argv[])
     {
         cmd_vel.data.push_back(0.0);
     }
-    ros::Subscriber my_subscriber = n.subscribe("/probot_anno/camera/image_raw", 1, myCallback);
-    my_publisher = n.advertise<std_msgs::Float64MultiArray>("/cmd_vel", 1);
-
+    ros::ServiceClient my_controller_switcher = n.serviceClient<controller_manager_msgs::SwitchController>("/probot_anno/controller_manager/switch_controller");
+    controller_manager_msgs::SwitchController my_controller_cmd;
+    // ros::Subscriber my_subscriber = n.subscribe("/probot_anno/camera/image_raw", 1, myCallback);
+    // my_publisher = n.advertise<std_msgs::Float64MultiArray>("/cmd_vel", 1);
+    int cnt = 1;
+    ros::Rate naptime(2);
+    std::vector<std::string> vel_controller{"arm_vel_controller"};
+    std::vector<std::string> pos_controller{"arm_pos_controller"};
     while (ros::ok())
     {
+        if (cnt == 1)
+        {
+            my_controller_cmd.request.start_controllers = vel_controller;
+            my_controller_cmd.request.stop_controllers = pos_controller;
+            my_controller_cmd.request.strictness = 1;
+            my_controller_switcher.call(my_controller_cmd);
+        }
+        if (cnt == -1)
+        {
+            my_controller_cmd.request.stop_controllers = vel_controller;
+            my_controller_cmd.request.start_controllers = pos_controller;
+            my_controller_cmd.request.strictness = 1;
+            my_controller_switcher.call(my_controller_cmd);
+        }
+        cnt *= -1;
+        naptime.sleep();
         ros::spinOnce();
-    }
-    for (int i = 0; i < 6; i++)
-    {
-        cmd_vel.data[i] = 0;
     }
     return 0;
 }

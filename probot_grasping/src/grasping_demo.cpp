@@ -19,7 +19,7 @@ limitations under the License.
 GraspingDemo::GraspingDemo(ros::NodeHandle n_, float pregrasp_x, float pregrasp_y, float pregrasp_z, float length, float breadth) :
     it_(n_), 
     armgroup("manipulator"), 
-    grippergroup("gripper"), 
+    // grippergroup("gripper"), 
     vMng_(length, breadth)
 {
   this->nh_ = n_;
@@ -52,9 +52,9 @@ GraspingDemo::GraspingDemo(ros::NodeHandle n_, float pregrasp_x, float pregrasp_
 
   ros::AsyncSpinner spinner(1);
   spinner.start();
-  ros::WallDuration(5.0).sleep();
-  ROS_INFO_STREAM("Getting into the Grasping Position....");
-  attainPosition(pregrasp_x, pregrasp_y, pregrasp_z);
+  // ros::WallDuration(5.0).sleep();
+  // ROS_INFO_STREAM("Getting into the Grasping Position....");
+  // attainPosition(pregrasp_x, pregrasp_y, pregrasp_z);
 
   // Subscribe to input video feed and publish object location
   image_sub_ = it_.subscribe("/probot_anno/camera/image_raw", 1, &GraspingDemo::imageCb, this);
@@ -143,33 +143,33 @@ void GraspingDemo::attainPosition(float x, float y, float z)
 
 void GraspingDemo::attainObject()
 {
-  // ROS_INFO("The attain Object function called");
-  attainPosition(obj_robot_frame.getX(), obj_robot_frame.getY(), obj_robot_frame.getZ() + 0.04);
+  // // ROS_INFO("The attain Object function called");
+  // attainPosition(obj_robot_frame.getX(), obj_robot_frame.getY(), obj_robot_frame.getZ() + 0.04);
 
-  // Open Gripper
-  ros::WallDuration(1.0).sleep();
-  grippergroup.setNamedTarget("open");
-  grippergroup.move();
+  // // Open Gripper
+  // ros::WallDuration(1.0).sleep();
+  // grippergroup.setNamedTarget("open");
+  // grippergroup.move();
 
-  // Slide down the Object
-  geometry_msgs::PoseStamped currPose = armgroup.getCurrentPose();
-  geometry_msgs::Pose target_pose1;
+  // // Slide down the Object
+  // geometry_msgs::PoseStamped currPose = armgroup.getCurrentPose();
+  // geometry_msgs::Pose target_pose1;
 
-  target_pose1.orientation = currPose.pose.orientation;
-  target_pose1.position = currPose.pose.position;
+  // target_pose1.orientation = currPose.pose.orientation;
+  // target_pose1.position = currPose.pose.position;
 
-  target_pose1.position.z = obj_robot_frame.getZ() - 0.02;
-  armgroup.setPoseTarget(target_pose1);
-  armgroup.move();
+  // target_pose1.position.z = obj_robot_frame.getZ() - 0.02;
+  // armgroup.setPoseTarget(target_pose1);
+  // armgroup.move();
 }
 
 void GraspingDemo::grasp()
 {
-  // ROS_INFO("The Grasping function called");
+  // // ROS_INFO("The Grasping function called");
 
-  ros::WallDuration(1.0).sleep();
-  grippergroup.setNamedTarget("close");
-  grippergroup.move();
+  // ros::WallDuration(1.0).sleep();
+  // grippergroup.setNamedTarget("close");
+  // grippergroup.move();
 }
 
 void GraspingDemo::lift()
@@ -200,8 +200,8 @@ void GraspingDemo::lift()
 
   // Open Gripper
   ros::WallDuration(1.0).sleep();
-  grippergroup.setNamedTarget("open");
-  grippergroup.move();
+  // grippergroup.setNamedTarget("open");
+  // grippergroup.move();
 
   target_pose1.position.z = target_pose1.position.z + 0.06;
   armgroup.setPoseTarget(target_pose1);
@@ -225,14 +225,14 @@ void GraspingDemo::initiateGrasping()
 
   homePose = armgroup.getCurrentPose();
   
-  ROS_INFO_STREAM("Approaching the Object....");
-  attainObject();
+  // ROS_INFO_STREAM("Approaching the Object....");
+  // attainObject();
 
-  ROS_INFO_STREAM("Attempting to Grasp the Object now..");
-  grasp();
+  // ROS_INFO_STREAM("Attempting to Grasp the Object now..");
+  // grasp();
 
-  ROS_INFO_STREAM("Lifting the Object....");
-  lift();
+  // ROS_INFO_STREAM("Lifting the Object....");
+  // lift();
 
   ROS_INFO_STREAM("Going back to home position....");
   goHome();
@@ -260,7 +260,7 @@ int main(int argc, char **argv)
   GraspingDemo simGrasp(n, pregrasp_x, pregrasp_y, pregrasp_z, length, breadth);
   ROS_INFO_STREAM("Waiting for five seconds..");
 
-  ros::WallDuration(5.0).sleep();
+  // ros::WallDuration(5.0).sleep();
   while (ros::ok())
   {
     // Process image callback

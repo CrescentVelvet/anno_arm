@@ -48,7 +48,7 @@ class GraspingDemo
 	/**
      * @brief grippegroup moveit interface for gripper
      */
-	moveit::planning_interface::MoveGroupInterface grippergroup;
+	// moveit::planning_interface::MoveGroupInterface grippergroup;
 	/**
      * @brief it_ takes care of message to image conversion
      */
