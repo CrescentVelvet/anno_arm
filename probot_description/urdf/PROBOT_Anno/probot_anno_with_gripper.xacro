@@ -31,7 +31,7 @@
   <joint name="world_joint" type="fixed">
     <parent link="world" />
     <child link="base_link" />
-    <origin xyz="0.70 0 0.75" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.70 0 0.02" rpy="0.0 0.0 0.0" />
   </joint>
 
   <link name="link_1">
@@ -270,6 +270,7 @@
   <xacro:transmission_block joint_name="gripper_finger_joint"/>
 
   <xacro:include filename="$(find probot_description)/urdf/PROBOT_Anno/sensors/camera.urdf.xacro" />
+  <!-- <xacro:include filename="$(find car_model)/robots/car_model.xacro" /> -->
 
   <!-- ros_control plugin -->
   <gazebo>

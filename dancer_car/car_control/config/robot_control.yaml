@@ -1,0 +1,52 @@
+car_model:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+
+  # Position Controllers ---------------------------------------
+  joint_column_link1_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_column_link1
+  joint_column_link2_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_column_link2
+  joint_column_link3_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_column_link3
+
+  # parameters for Gazebo ROS control plugin
+  gazebo_ros_control/pid_gains:
+    joint_column_link1_controller: {p: 100.0, i: 0.01, d: 10.0}
+    joint_column_link2_controller: {p: 100.0, i: 0.01, d: 10.0}
+    joint_column_link3_controller: {p: 100.0, i: 0.01, d: 10.0}
+
+#  joint_column_link1_controller:
+#    type: position_controllers/JointPositionController
+#    joint: joint_column_link1
+#    pid: {p: 10, i: 0.01, d: 0}
+#  joint_column_link2_controller:
+#    type: position_controllers/JointPositionController
+#    joint: joint_column_link2
+#    pid: {p: 10, i: 0.01, d: 0}
+#  joint_column_link3_controller:
+#    type: position_controllers/JointPositionController
+#    joint: joint_column_link3
+#    pid: {p: 10, i: 0.01, d: 0}
+
+#  joint_right_front_wheel:
+#    type: effort_controllers/JointEffortController
+#    joint: joint_right_front_wheel
+#    pid: {p: 10, i: 0.01, d: 0}
+#  joint_right_back_wheel:
+#    type: effort_controllers/JointEffortController
+#    joint: joint_right_back_wheel
+#    pid: {p: 10, i: 0.01, d: 0}
+#  joint_left_front_wheel:
+#    type: effort_controllers/JointEffortController
+#    joint: joint_left_front_wheel
+#    pid: {p: 10, i: 0.01, d: 0}
+#  joint_left_back_wheel:
+#    type: effort_controllers/JointEffortController
+#    joint: joint_left_back_wheel
+#    pid: {p: 10, i: 0.01, d: 0}

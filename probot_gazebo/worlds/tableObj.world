@@ -5,11 +5,50 @@
     <include>
       <uri>model://sun</uri>
     </include>
-
+    <scene>
+      <sky>
+        <clouds>
+          <speed>12</speed>
+        </clouds>
+      </sky>
+    </scene>
     <!-- A ground plane -->
-    <include>
-      <uri>model://ground_plane</uri>
-    </include>
+    <model name="ground">
+      <link name="body">
+        <collision name="geom">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>10 10</size>
+            </plane>
+          </geometry>-->
+          <surface>
+            <friction>
+              <ode>
+                <mu>10</mu>
+                <mu2>10</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <cast_shadows>false</cast_shadows>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>15 10</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/CloudySky</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <static>true</static>
+    </model>
 
     <!-- Physics settings for simulation -->
     <physics type="ode">
@@ -91,7 +130,7 @@
       </link>
     </model>
 
-    <model name="table_box_model">
+    <!-- <model name="table_box_model">
       <static>true</static>
       <pose frame="">0.40 0.0 0.1 0 -0 1.5707963265</pose>
       <link name="table_box_link">
@@ -145,17 +184,18 @@
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
       </link>
-    </model>
+    </model> -->
 
     <!-- Disable shadows. -->
     <scene>
       <shadows>false</shadows>
     </scene>
 
-    <include>
+    <!-- <include>
       <uri>model://conveyor</uri>
-      <pose>1.2 5 0 0 0 -1.571</pose> <!-- Warning: Do not change this pose -->
-    </include>
+      <pose>1.2 5 0 0 0 -1.571</pose> <!- - Warning: Do not change this pose - ->
+    </include> -->
+    
 
   </world>
 </sdf>
