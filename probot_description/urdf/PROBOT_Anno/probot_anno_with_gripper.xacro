@@ -246,7 +246,7 @@
   <xacro:transmission_block joint_name="joint_5" />
   <xacro:transmission_block joint_name="joint_6" />
 
-  <xacro:macro name="transmission_block2" params="joint_name">
+  <!-- <xacro:macro name="transmission_block2" params="joint_name">
     <transmission name="tran2">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="${joint_name}">
@@ -265,9 +265,9 @@
   <xacro:transmission_block2 joint_name="joint_3" />
   <xacro:transmission_block2 joint_name="joint_4" />
   <xacro:transmission_block2 joint_name="joint_5" />
-  <xacro:transmission_block2 joint_name="joint_6" />
+  <xacro:transmission_block2 joint_name="joint_6" /> -->
 
-  <xacro:transmission_block2 joint_name="gripper_finger_joint"/>
+  <xacro:transmission_block joint_name="gripper_finger_joint"/>
 
   <xacro:include filename="$(find probot_description)/urdf/PROBOT_Anno/sensors/camera.urdf.xacro" />
 

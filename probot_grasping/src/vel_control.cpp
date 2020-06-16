@@ -69,7 +69,7 @@ public:
         robot_state::RobotStatePtr kinematic_state(new robot_state::RobotState(kinematic_model));
         kinematic_state->setToDefaultValues();
 
-        Eigen::Vector3d reference_point_position(0.0, 0.0, 0.0315);
+        Eigen::Vector3d reference_point_position(0.0, 0.0, 0.0);
 
         kinematic_state->getJacobian(joint_model_group,
                                      kinematic_state->getLinkModel(joint_model_group->getLinkModelNames().back()),

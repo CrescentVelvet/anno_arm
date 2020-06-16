@@ -7,12 +7,11 @@ This link is the base of the arm in which arm is placed
 <!-- camera -->
   <gazebo reference="camera_link">
     <material>Gazebo/Red</material>
-
-    <sensor type="camera" name="camera">
+    <sensor type="depth" name="camera">
+    <!-- <sensor type="camera" name="camera"> -->
       <update_rate>30.0</update_rate>
       <camera name="head">
         <horizontal_fov>1.8</horizontal_fov>
-        <!-- <horizontal_fov>0.95</horizontal_fov> -->
         <image>
           <width>1000</width>
           <height>1000</height>
@@ -22,28 +21,36 @@ This link is the base of the arm in which arm is placed
           <near>0.02</near>
           <far>300</far>
         </clip>
-        <noise>
+        <!-- <noise>
           <type>gaussian</type>
-          <!-- Noise is sampled independently per pixel on each frame.
-               That pixel's noise value is added to each of its color
-               channels, which at that point lie in the range [0,1]. -->
           <mean>0.0</mean>
           <stddev>0.0</stddev>
-        </noise>
+        </noise> -->
       </camera>
-      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <!-- <plugin name="camera_controller" filename="libgazebo_ros_camera.so"> -->
+        <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">        
         <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
         <cameraName>probot_anno/camera</cameraName>
-        <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <imageTopicName>rgb/image_raw</imageTopicName>
+        <depthImageTopicName>depth/image_raw</depthImageTopicName>
+        <pointCloudTopicName>depth/points</pointCloudTopicName>
+        <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+        <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
         <frameName>camera_link</frameName>
-        <hackBaseline>0.07</hackBaseline>
+        <baseline>0.2</baseline>
         <distortionK1>0.0</distortionK1>
         <distortionK2>0.0</distortionK2>
         <distortionK3>0.0</distortionK3>
         <distortionT1>0.0</distortionT1>
         <distortionT2>0.0</distortionT2>
+        <pointCloudCutoff>0.001</pointCloudCutoff>
+        <pointCloudCutoffMax>60.0</pointCloudCutoffMax>
+        <CxPrime>0</CxPrime>
+        <Cx>0</Cx>
+        <Cy>0</Cy>
+        <focalLength>0</focalLength>
+        <hackBaseline>0</hackBaseline>
       </plugin>
     </sensor>
 </gazebo>

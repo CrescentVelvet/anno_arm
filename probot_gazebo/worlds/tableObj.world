@@ -20,7 +20,7 @@
     </physics>
 
     <model name="coke_can_box_model">
-      <pose frame="">1 1 1 0 0 0</pose>
+      <pose frame="">1 0.5 1 0 0 0</pose>
       <link name="coke_can">
         <inertial>
           <mass>0.001</mass>

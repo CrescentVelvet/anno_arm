@@ -11,12 +11,12 @@ int main(int argc, char *argv[])
     {
         msg.data.push_back(0);
     }
-    msg.data[0] = 0.0;
+    msg.data[0] = 0.01;
     msg.data[1] = 0.0;
     msg.data[2] = 0.0;
     msg.data[3] = 0.0;
     msg.data[4] = 0.0;
-    msg.data[5] = 0.1;
+    msg.data[5] = 0.0;
 
     while (ros::ok())
     {
