@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="conveyor_world">
+
+    <physics type="ode">
+      <max_step_size>0.00625</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>160</real_time_update_rate>
+      <gravity>0 0 -9.8</gravity>
+    </physics>
+
+    <!-- Disable shadows. -->
+    <scene>
+      <shadows>false</shadows>
+    </scene>
+
+    <!--  A small chunk of the pale blue dot. -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- A global light source -->
+    <include>
+      <uri>model://moon_walk</uri>
+    </include>
+
+    <include>
+      <uri>model://conveyor</uri>
+      <pose>1.2 5 0 0 0 -1.571</pose> <!-- Warning: Do not change this pose -->
+    </include>
+
+  </world>
+</sdf>

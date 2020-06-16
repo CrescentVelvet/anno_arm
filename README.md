@@ -22,4 +22,12 @@ $ source ~/.bashrc
 
 ## 安装OpenCV 
 
+## 运行机械臂
+```
+roslaunch probot_grasping probot_anno_grasping_demo.launch 
+```
 
+## 运行传送带
+```
+rosservice call /conveyor/control "state: power: 12.0"
+```
