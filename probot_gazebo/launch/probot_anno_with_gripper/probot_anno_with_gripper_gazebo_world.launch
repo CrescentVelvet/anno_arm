@@ -19,19 +19,19 @@
   </include>
 
   <!-- Load the URDF into the ROS Parameter Server -->
-  <!-- <param name="robot_description" command="$(find xacro)/xacro - -inorder '$(find probot_description)/urdf/PROBOT_Anno/probot_anno_with_gripper.xacro'" />  -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find probot_description)/urdf/PROBOT_Anno/probot_anno_with_gripper.xacro'" /> 
+
   <!-- <group ns = "first_probot">
     <param name="robot_description" command="$(find xacro)/xacro - -inorder '$(find probot_description)/urdf/PROBOT_Anno/probot_anno_with_gripper.xacro'" />
     <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model probot_description -x 0 -y 0 -z 0.1 -param robot_description" />
   </group> -->
   <group ns = "second_car">
     <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find car_model)/robots/car_model.xacro'" />
-    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model car_model -x 1 -y 0.5 -z 0.1 -param robot_description" />
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model car_model -x 1.1 -y 0.5 -z 0.1 -R 0 -P 0 -Y 1.57 -param robot_description" />
   </group>
 
   <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
 	args="-urdf -model probot_anno -param robot_description"/> 
-
 
 </launch>

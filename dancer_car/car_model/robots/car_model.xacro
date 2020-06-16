@@ -5,7 +5,7 @@
   <xacro:property name="car_mass" value="1.0" />
   <xacro:property name="car_a" value="0.25" />
   <xacro:property name="car_b" value="0.16" />
-  <xacro:property name="car_c" value="0.05" />
+  <xacro:property name="car_c" value="0.16" />
   <xacro:property name="wheel_mass" value="0.1" />
   <xacro:property name="wheel_lenth" value="0.02" />
   <xacro:property name="wheel_radius" value="0.025" />
@@ -680,7 +680,7 @@
       <leftRearJoint>joint_left_back_wheel</leftRearJoint>
       <wheelSeparation>${car_b}</wheelSeparation>
       <wheelDiameter>${wheel_radius*2}</wheelDiameter>
-      <commandTopic>cmd_vel</commandTopic>
+      <commandTopic>cmd_car</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <robotBaseFrame>world_link</robotBaseFrame>
       <odometryFrame>odom</odometryFrame>
@@ -688,7 +688,7 @@
       <covariance_y>0.000100</covariance_y>
       <covariance_yaw>0.010000</covariance_yaw>
       <torque>1</torque>
-      <topicName>cmd_vel</topicName>
+      <topicName>cmd_car</topicName>
       <broadcastTF>1</broadcastTF>
     </plugin>
   </gazebo>
@@ -699,6 +699,7 @@
       filename="libgazebo_ros_control.so">
       <robotNamespace>/car_model</robotNamespace>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <legacyModeNS>true</legacyModeNS>
     </plugin>
   </gazebo>
 

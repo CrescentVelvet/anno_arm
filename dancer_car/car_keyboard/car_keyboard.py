@@ -14,35 +14,35 @@ msg = """
 Reading from the keyboard  and Publishing to Twist!
 ---------------------------
 Moving around:
-   u    i    o
-   j    k    l
-   m    <    >
+   q    w    e
+   a    s    d
+   z    x    c
 
 anything else : stop
 
-q/a : increase/decrease only linear speed by 10%
-w/s : increase/decrease only angular speed by 10%
+1/2 : increase/decrease only linear speed by 10%
+3/4 : increase/decrease only angular speed by 10%
 
 CTRL-C to quit
 """
 
 moveBindings = {
-        'u':( 1, 0, 0, 1), # left front
-        'i':( 1, 0, 0, 0), # front
-        'o':( 1, 0, 0,-1), # right front
-        'j':( 0, 0, 0, 1), # left
-        'k':( 0, 0, 0, 0), # stop
-        'l':( 0, 0, 0,-1), # right
-        'm':(-1, 0, 0,-1), # left back
-        ',':(-1, 0, 0, 0), # back
-        '.':(-1, 0, 0, 1), # right back
+        'q':( 1, 0, 0, 1), # left front
+        'w':( 1, 0, 0, 0), # front
+        'e':( 1, 0, 0,-1), # right front
+        'a':( 0, 0, 0, 1), # left
+        's':( 0, 0, 0, 0), # stop
+        'd':( 0, 0, 0,-1), # right
+        'z':(-1, 0, 0,-1), # left back
+        'x':(-1, 0, 0, 0), # back
+        'c':(-1, 0, 0, 1), # right back
     }
 
 speedBindings={
-        'q':( 1.1, 1.0), # increase linear speed
-        'a':( 0.9, 1.0), # decrease linear speed
-        'w':( 1.0, 1.1), # increase angular speed
-        's':( 1.0, 0.9), # decrease angular speed
+        '1':( 1.1, 1.0), # increase linear speed
+        '2':( 0.9, 1.0), # decrease linear speed
+        '3':( 1.0, 1.1), # increase angular speed
+        '4':( 1.0, 0.9), # decrease angular speed
     }
 
 # controlBindings={
@@ -62,25 +62,25 @@ def getKey():
     return key
 
 def vels(speed, turn):
-    return "currently:\tspeed %s\tturn %s " % (speed, turn)
+    return "\tspeed %s\tturn %s " % (speed, turn)
 
 # def column(link1, link2, link3):
 #     return "link1: %s\tlink2: %s\tlink3 %s " % (link1, link2, link3)
 
 if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
-    pub_move = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)
+    pub_move = rospy.Publisher('/cmd_car', Twist, queue_size = 1)
     # pub_link1 = rospy.Publisher('/car_model/joint_column_link1_controller/command', Float64, queue_size = 1)
     # pub_link2 = rospy.Publisher('/car_model/joint_column_link2_controller/command', Float64, queue_size = 1)
     # pub_link3 = rospy.Publisher('/car_model/joint_column_link3_controller/command', Float64, queue_size = 1)
     rospy.init_node('car_keyboard')
-    speed = rospy.get_param("~speed", 0.5)
+    speed = rospy.get_param("~speed", 0.2)
     turn = rospy.get_param("~turn", 5.0)
     x = 0
     y = 0
     z = 0
     th = 0
-    status = 0
+    # status = 0
     # link1 = 0
     # link2 = 0
     # link3 = 0
@@ -97,16 +97,16 @@ if __name__=="__main__":
                 z = moveBindings[key][2]
                 th = moveBindings[key][3]
                 print(vels(speed,turn))
-                if (status == 14):
-                    print(msg)
-                status = (status + 1) % 15
+                # if (status == 14):
+                    # print(msg)
+                # status = (status + 1) % 15
             elif key in speedBindings.keys():
                 speed = speed * speedBindings[key][0]
                 turn = turn * speedBindings[key][1]
                 print(vels(speed,turn))
-                if (status == 14):
-                    print(msg)
-                status = (status + 1) % 15
+                # if (status == 14):
+                    # print(msg)
+                # status = (status + 1) % 15
             # elif key in controlBindings.keys():
                 # link1 = link1 + 0.1 * controlBindings[key][0]
                 # link2 = link2 + 0.1 * controlBindings[key][1]

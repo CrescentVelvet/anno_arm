@@ -270,7 +270,6 @@
   <xacro:transmission_block joint_name="gripper_finger_joint"/>
 
   <xacro:include filename="$(find probot_description)/urdf/PROBOT_Anno/sensors/camera.urdf.xacro" />
-  <!-- <xacro:include filename="$(find car_model)/robots/car_model.xacro" /> -->
 
   <!-- ros_control plugin -->
   <gazebo>

@@ -36,7 +36,7 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
 {
     int g_nThresh = 30;
     int g_nMaxThresh = 175;
-    static int fuck_count;
+    static int lost_count;
     cv::Mat imgimg;
     cv::Mat hsv_img, mask_img, green_img;
     cv::Mat gray_img, scharr_img, scharr_imgx, scharr_imgy, absscharr_imgx, absscharr_imgy;
@@ -45,31 +45,24 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     // 绿色过滤
     std_msgs::Float64MultiArray msg;
     std::vector<cv::Point2f> corners, last_corners;
-    
 
     imgimg = cv_bridge::toCvShare(img, "bgr8")->image;
     cvtColor(imgimg, corner_img, CV_BGR2GRAY);
-    if(!last_imgimg.empty()){
+    if (!last_imgimg.empty())
+    {
         cvtColor(last_imgimg, last_corner_img, CV_BGR2GRAY);
         goodFeaturesToTrack(last_corner_img, last_corners,
-                        100, 0.01, 10,
-                        cv::Mat(), 3,
-                        false,
-                        0.04);
+                            100, 0.01, 10,
+                            cv::Mat(), 3,
+                            false,
+                            0.04);
     }
-    
+
     goodFeaturesToTrack(corner_img, corners,
                         100, 0.01, 10,
                         cv::Mat(), 3,
                         false,
                         0.04);
-    int num;
-    num = std::min(corners.size(), last_corners.size());
-    for(int i = 0; i < num; i++){
-
-    }
-    
-    
 
     green_img = cv::Mat::zeros(imgimg.size(), imgimg.type());
     cv::cvtColor(imgimg, hsv_img, CV_BGR2HSV);
@@ -95,11 +88,6 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     cv::Scharr(green_img, scharr_imgy, CV_16S, 0, 1, 1, 0, cv::BORDER_DEFAULT);
     cv::convertScaleAbs(scharr_imgy, absscharr_imgy);
     cv::addWeighted(absscharr_imgx, 0.5, absscharr_imgy, 0.5, 0, scharr_img);
-    // cv::Scharr(imgimg, scharr_imgx, CV_16S, 1, 0, 1, 0, cv::BORDER_DEFAULT);
-    // cv::convertScaleAbs(scharr_imgx, absscharr_imgx);
-    // cv::Scharr(imgimg, scharr_imgy, CV_16S, 0, 1, 1, 0, cv::BORDER_DEFAULT);
-    // cv::convertScaleAbs(scharr_imgy, absscharr_imgy);
-    // cv::addWeighted(absscharr_imgx, 1, absscharr_imgy, 1, 0, scharr_img);
     // 边缘检测
     std::vector<std::vector<cv::Point>> squares;
     std::vector<cv::Point> std_squares;
@@ -164,7 +152,6 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     const cv::Point *p = &p_squares[0];
     int n = (int)p_squares.size();
 
-
     // if (p->x > 3 && p->y > 3)
     // {
     //     std::cout << p->x << std::endl;
@@ -173,7 +160,6 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     //     // cv::circle(imgimg, p[1], 2, cv::Scalar(0,0,255),-1);
     //     // cv::circle(imgimg, p[2], 2, cv::Scalar(0,0,255),-1);
     //     // cv::circle(imgimg, p[3], 2, cv::Scalar(0,0,255),-1);
-
     //     int num_point = 10;
     //     double temp_x[num_point];
     //     double temp_y[num_point];
@@ -198,15 +184,10 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     //         cv::circle(imgimg, cv::Point(temp_x[i],temp_y[i]), 4, cv::Scalar(0,0,255),-1);
     //     }
     // }
-
-
     // for (int i = 0; i < corners.size(); i++)
     // {
     //     cv::circle(imgimg, corners[i], 5, cv::Scalar(0,0,255), -1);
     // }
-
-
-
 
     // 角点匹配
     std_squares.push_back(cv::Point(520, 280));
@@ -223,18 +204,18 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     // 记忆p_mean
     if (p_squares[2].x < 1e-3 && p_squares[2].y < 1e-3)
     {
-        fuck_count++;
-        if (fuck_count > 50)
+        lost_count++;
+        if (lost_count > 5)
         {
             cmd_vel.data[0] = 0;
             cmd_vel.data[1] = 0;
             cmd_vel.data[2] = 0;
             cmd_vel.data[5] = 0;
+            lost_count = 0;
             my_publisher.publish(cmd_vel);
             cv::waitKey(4);
             return;
         }
-
         for (int i = 0; i < p_squares.size(); i++)
         {
             p_squares[i].x = old_p_squares[i].x;
@@ -243,7 +224,7 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     }
     else
     {
-        fuck_count = 0;
+        lost_count = 0;
         for (int i = 0; i < p_squares.size(); i++)
         {
 
@@ -336,7 +317,7 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
         v_z = 0;
         // std::cout << "fuck";
     }
-    if (fuck_count != 0)
+    if (lost_count != 0)
     {
         v_z = 0.08;
     }
@@ -352,7 +333,7 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
     // std::cout << v_x << " " << v_y << " " << v_z << std::endl;
     my_publisher.publish(cmd_vel);
     // cv::line(imgimg, p_mean, std_mean, cv::Scalar(255, 0, 255), 5, cv::LINE_AA);
-    // cv::imshow("imgimg", imgimg);
+    cv::imshow("imgimg", imgimg);
     // cv::imshow("mask_img", mask_img);
     // cv::imshow("green_img", green_img);
     // cv::imshow("scharr_img", scharr_img);
@@ -370,10 +351,9 @@ void myCallback(const sensor_msgs::ImageConstPtr &img)
         // std::cout << 20 * v_y << "----------" << corners[i].y << std::endl;
     }
     if(!last_imgimg.empty()){
-        imshow("last_imgimg", last_imgimg);
+        // imshow("last_imgimg", last_imgimg);
     }
     last_imgimg = imgimg;
-    
 
     cv::waitKey(4);
 }
@@ -382,7 +362,8 @@ void myCallbackdepth(const sensor_msgs::ImageConstPtr &img)
 {
     cv::Mat depth_img;
     depth_img = cv_bridge::toCvShare(img, "32FC1")->image;
-    if(!depth_img.empty()){
+    if (!depth_img.empty())
+    {
         imshow("depth_img", depth_img);
     }
 }
@@ -399,7 +380,7 @@ int main(int argc, char *argv[])
     // ros::ServiceClient my_controller_switcher = n.serviceClient<controller_manager_msgs::SwitchController>("/probot_anno/controller_manager/switch_controller");
     // controller_manager_msgs::SwitchController my_controller_cmd;
     ros::Subscriber my_subscriber1 = n1.subscribe("/probot_anno/camera/rgb/image_raw", 1, myCallback);
-    ros::Subscriber my_subscriber2 = n2.subscribe("/probot_anno/camera/depth/image_raw", 1, myCallbackdepth);
+    // ros::Subscriber my_subscriber2 = n2.subscribe("/probot_anno/camera/depth/image_raw", 1, myCallbackdepth);
     my_publisher = n1.advertise<std_msgs::Float64MultiArray>("/cmd_vel", 1);
     int cnt = -1;
     ros::Rate naptime(2);
