@@ -1,118 +1,116 @@
-# PROBOT Anno
-
-This repository provides ROS support for PROBOT Anno.   
-This repo holds source code for ROS versions Kinetic and Melodic.
-
-![PROBOT_Anno](docs/images/PROBOT_Anno.png)
-
-### __Wiki for PROBOT Anno Packages__ 
-- http://wiki.ros.org/Robots/PROBOT_Anno
-
-
-### __Operating System Install__  
-Operating system version is not less than Ubuntu linux 14.04, both supports 32bit and 64bit system.
-Ubuntu Linux download:http://www.ubuntu.com/download/
-
-Please install git and clone repo before the following steps:
-```sh
-$ sudo apt-get install git
-$ git clone https://github.com/ps-micro/PROBOT_Anno
-```
-
-### __Setup Environment__
-Choose one of the following ways to install.
-
-__Install With Script(Recommended)__  
-1. Run PROBOT [install.sh](https://github.com/ps-micro/PROBOT_Anno/install.sh)
-```sh
-PROBOT Setup Assistant[v1.0.0]
----- www.ps-micro.com ----
-
-  0. Install ROS
-  1. Install PROBOT dependent packages
-  2. Install PROBOT packages
--------------------
-  3. Install all environment
-    
-[Warn] The system version: Ubuntu 16.04.5 LTS
-[Warn] The ROS version: kinetic
-
-please choose [0~3]：
-```
-2. Choose '3' to install all environment(include 0，1,2).   
-3. Besides, you can choose 0~2 to install the separate step with own wishes.   
-4. If setup fails, please try again.
-
-__Install With Commands__  
-
-1. Install ROS Desktop-Full with [this tutorials](http://wiki.ros.org/kinetic/Installation/Ubuntu)   
-
-2. Install Dependant Packages:   
-```sh
-    $ ROS_VERSION=`/usr/bin/rosversion -d`   
-    $ sudo apt-get install ros-${ROS_VERSION}-moveit-*   
-    $ sudo apt-get install ros-${ROS_VERSION}-industrial-*   
-    $ sudo apt-get install ros-${ROS_VERSION}-gazebo-ros-control   
-    $ sudo apt-get install ros-${ROS_VERSION}-ros-control ros-${ROS_VERSION}-ros-controllers   
-    $ sudo apt-get install ros-${ROS_VERSION}-trac-ik-kinematics-plugin   
-    $ sudo apt-get install ros-${ROS_VERSION}-usb-cam   
-```
-
-3. Install PROBOT Packages:   
-- Set up a catkin workspace (see [this tutorials](http://wiki.ros.org/catkin/Tutorials)).
-- Clone the repository into the src/ folder of workspace   
-- Use "catkin_make" to build workspace
-- Copy probot_rviz_plugin/plugin/libprobot_rviz_plugin.so to 'WORKSPACE_PATH'/devel/lib
-- Set up environment variables:   
+### 配置环境
 ```sh
 $ echo "source ~/'WORKSPACE_PATH'/install/setup.bash" >> ~/.bashrc
 $ source ~/.bashrc
 ```
-
-__Install Librarys__  
-
-1. Install OpenCV   
-
-
-### __MoveIt! with a simulated robot__  
-You can use MoveIt! to control the simulated robot. 
-
-For setting up the MoveIt! to allow motion planning run:   
+### 运行机械臂
 ```sh
-$ roslaunch probot_bringup probot_anno_bringup.launch sim:=true
+roslaunch probot_grasping probot_anno_grasping_demo.launch
 ```
-
-### __MoveIt! with Gazebo Simulation__  
-There are launch files available to bringup a simulated robot.
-
-To bring up the simulated robot in Gazebo and moveit, run:   
+### 运行视觉处理
 ```sh
-$ roslaunch probot_gazebo probot_anno_bringup_moveit.launch
+roslaunch probot_grasping ibvs.launch
 ```
-
-To bring up the grasping simulated demo, run:   
+### 运行传送带
 ```sh
-$ roslaunch probot_grasping probot_anno_grasping_demo.launch
+rosservice call /conveyor/control "state: power: 12.0"
 ```
-
-### __MoveIt! with real Hardware__  
-There are launch files available to bringup a real robot(PROBOT Anno).   
-
-Don't forget to source the correct setup shell files and use a new terminal for each command! 
-
-To bring up the real robot, then run:   
+### 运行小车
+```键盘
+q  w  e
+a  s  d
+z  x  c
+```
+### 卸载自带的OpenCV3.2.0
+```sh
+sudo apt-get purge libopencv* 
+sudo apt autoremove
+pkg-config opencv --modversion
+```
+查看opencv版本，查不到，成功卸载。
+### 重新安装OpenCV4.2.0
+```sh
+sudo apt install  build-essential
+sudo apt install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev  
+sudo apt install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
+sudo apt update
+sudo apt upgrade
+sudo apt install libjasper1 libjasper-dev
+```
+其中 libjasper1 是 libjasper-dev 的依赖包。
+去官网下载Source源文件https://opencv.org/releases/
+解压到home/Tools下，新建build文件夹，进入build，
+```sh
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
+```
+这里的/usr/local 是 OpenCV 的安装路径
+多线程编译sudo make -j8
+```sh
+sudo make install
+```
+### 配置OpenCV环境
+添加路径
+```sh
+sudo gedit /etc/ld.so.conf.d/opencv.conf
+```
+添加/usr/local/lib
+保存配置
+```sh
+sudo ldconfig
+```
+配置环境
+```sh
+sudo gedit /etc/bash.bashrc
+```
+在文末添加
+```sh
+PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
+export PKG_CONFIG_PATH
+```
+保存配置
+```sh
+source /etc/bash.bashrc
+```
+更新
+```sh
+sudo updatedb
+```
+测试安装成功与否
 
 ```sh
-$ roslaunch probot_bringup probot_anno_bringup.launch robot_ip:=192.168.2.123
+cd home/Tools/opencv/samples/cpp/example_cmake
+cmake .
+make
+./opencv_example
 ```
-
-You can use MoveIt! plugin to control the robot.
-
-Additionally, a simple test script that moves the robot to predefined positions can be executed like this:   
-
+出现摄像头图像，即为成功。
+### 安装Anno机械臂
 ```sh
-$ rosrun probot_demo probot_demo.py
+git clone https://github.com/ps-micro/PROBOT_Anno
 ```
-
-<font color=#BC8F8F>__CAUTION__</font> :  
-Remember that you should always have your hands on the big red button in case there is something in the way or anything unexpected happens.
+查看ros版本：
+```sh
+/usr/bin/rosversion -d
+```
+下载依赖包
+```sh
+sudo apt-get install ros-melodic-moveit-*
+sudo apt-get install ros-melodic-industrial-*   
+sudo apt-get install ros-melodic-gazebo-ros-control
+sudo apt-get install ros-melodic-ros-control ros-melodic-ros-controllers  
+sudo apt-get install ros-melodic-trac-ik-kinematics-plugin   
+sudo apt-get install ros-melodic-usb-cam
+```
+更新源列表
+```sh
+sudo apt-get update
+```
+安装可以更新的软件
+```sh
+sudo apt-get upgrade
+```
+把文件夹放入catkin_ws/src中
+```sh
+catkin_make
+```
