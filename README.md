@@ -21,6 +21,25 @@ q  w  e
 a  s  d
 z  x  c
 ```
+### 效果图片
+
+<img width=850 src="https://img-blog.csdnimg.cn/20201225152939422.png" alt="图像雅可比矩阵"/>
+
+
+图像雅可比矩阵
+
+
+<img width=850 src="https://img-blog.csdnimg.cn/20201225152954137.png" alt="小车随动抓取"/>
+
+
+小车随动抓取
+
+
+<img width=850 src="https://img-blog.csdnimg.cn/20201225153028877.png" alt="传送带随动抓取"/>
+
+
+传送带随动抓取
+
 ### 卸载自带的OpenCV3.2.0
 ```sh
 sudo apt-get purge libopencv* 
